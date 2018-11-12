@@ -91,7 +91,8 @@ class DateParsing(fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
         date_pattern = re.compile(r'(\d{2}).(\d{2}).(\d{4})')
         match = date_pattern.match(value)
-        return '-'.join(match.groups())
+        if match:
+            return '-'.join(match.groups())
 
 
 class AnalyticsPriceSchema(ma.Schema):
