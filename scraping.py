@@ -73,6 +73,7 @@ class TradingScraper:
         :param page_index: specific paging
         :return: generator with needed values in lines from table
         """
+        print('Start trades scrapping for {} paging'.format(str(page_index)))
 
         page = requests.get(self.URL_TRADES.format(self.trick_name, page_index))
         tree = html.fromstring(page.content)
@@ -90,7 +91,7 @@ class TradingScraper:
             self.last_page = int(tree.xpath(self.XPATH_LAST_PAGE))
             if self.last_page < self.pages_count:
                 self.pages_count = self.last_page
-        return trades_agent(trades)
+        return trades_agent(trades, page_index)
 
     async def scraping_prices(self):
         """ Scrapping of historical prices for the specific interval
@@ -111,11 +112,13 @@ class TradingScraper:
         return prices_agent(prices)
 
 
-def trades_agent(generator):
+def trades_agent(generator, index):
+    print('Trades was received on {} paging'.format(str(index)))
     yield from generator
 
 
 def prices_agent(generator):
+    print('Some prices was received')
     yield from generator
 
 
@@ -132,7 +135,6 @@ def send_tasks_to_load(tick_name, tasks):
 
 
 def prices_loading(trick_name, prices):
-    print('PRICES_LOADING')
     today = date.today()
     ticker = get_or_create(Ticker, name=trick_name)
     order_params = {'date': 0, 'open': 1, 'high': 2, 'low': 3, 'close': 4, 'volume': 5}
@@ -153,7 +155,6 @@ def prices_loading(trick_name, prices):
 
 
 def trades_loading(trick_name, trades):
-    print('TRADES_LOADING')
     order_params = {
         'code': 0,
         'insider': 1,
@@ -192,7 +193,7 @@ async def main(event_loop, ticks_list, threads_limit=10, types_scrubs=None):
     while not scraper.finished:
         dl_tasks.add(event_loop.create_task(scraper.__await__()))
 
-        if len(dl_tasks) >= threads_limit or scraper.started_paging > 0:
+        if len(dl_tasks) >= threads_limit and scraper.started_paging > 0:
             # Wait for some download to finish before adding a new one
             _done, dl_tasks = await asyncio.wait(
                 dl_tasks, return_when=asyncio.FIRST_COMPLETED
