@@ -1,0 +1,8 @@
+__pycache__
+.idea
+.git
+*.egg-info
+*.sqlite3
+migrations
+instance
+venv
