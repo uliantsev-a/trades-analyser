@@ -1,10 +1,12 @@
-Flask==0.12.2
-SQLAlchemy==1.2.12
-Flask-Migrate==2.3.0
 psycopg2-binary==2.7.5
 requests==2.20.0
 lxml==4.2.5
 babel==2.6.0
+SQLAlchemy==1.2.12
 marshmallow==2.16.3
 marshmallow-sqlalchemy==0.14.2
+Flask==0.12.4
+Flask-Migrate==2.3.0
 flask-fixtures==0.3.7
+flask-marshmallow==0.9.0
+Flask-Cors==3.0.7
