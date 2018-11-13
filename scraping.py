@@ -193,7 +193,7 @@ async def main(event_loop, ticks_list, threads_limit=10, types_scrubs=None):
     while not scraper.finished:
         dl_tasks.add(event_loop.create_task(scraper.__await__()))
 
-        if len(dl_tasks) >= threads_limit and scraper.started_paging > 0:
+        if len(dl_tasks) >= threads_limit or scraper.started_paging and not scraper.last_page:
             # Wait for some download to finish before adding a new one
             _done, dl_tasks = await asyncio.wait(
                 dl_tasks, return_when=asyncio.FIRST_COMPLETED
